@@ -63,33 +63,38 @@ api_id = '26989318'
 api_hash = '062a6050a2c00efbd633b53c434a4f5b'
 session_name = 'my-laptop-script'
 phone_number = '+918220853158'
-async def channel_info():
-    client =  TelegramClient(session_name,api_id,api_hash)
 
-    @client.on(events.NewMessage())
-    async def handler(event):
-        message = event.message
-        sender = await message.get_sender()
-        forwardId = 1002102875081
-        text = message.text
-        media = message.media
-        if sender.id==1494678304 or sender.id==2102875081:
-            text = discudemy.make(text)
-            if not text:
-                print(text)
-                return False
-            await client.send_message(forwardId, message=text)
-            print(f"Received text message: '{text}' and forwarded as it is.")
 
-    async def list_channels():
-        await client.start()
-        dialogs = await client.get_dialogs()
-        for dialog in dialogs:
-            if dialog.is_channel:
-                print(f"Channel Name: {dialog.title}, Sender ID: {dialog.id}")
-    # await list_channels()
+client =  TelegramClient(session_name,api_id,api_hash)
 
+@client.on(events.NewMessage())
+async def handler(event):
+    message = event.message
+    sender = await message.get_sender()
+    forwardId = 1002102875081
+    text = message.text
+    media = message.media
+    if sender.id==1494678304 or sender.id==2102875081:
+        if sender.id==1494678304:
+            await client.send_message('me',message=message)
+        text = discudemy.make(text)
+        if not text:
+            print(text)
+            return False
+        await client.send_message(forwardId, message=text)
+        print(f"Received text message: '{text}' and forwarded as it is.")
+
+async def list_channels():
+    await client.start()
+    dialogs = await client.get_dialogs()
+    for dialog in dialogs:
+        if dialog.is_channel:
+            print(f"Channel Name: {dialog.title}, Sender ID: {dialog.id}")
+# await list_channels()
+
+async def main():
     await client.start(phone=phone_number)
     await client.run_until_disconnected()
 
-run(channel_info())
+with client:
+    client.loop.run_until_complete(main())
