@@ -1,1 +1,1 @@
-web: python main.py --timeout 86400
+web: python main.py --timeout 86400p
