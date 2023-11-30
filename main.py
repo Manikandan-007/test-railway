@@ -61,7 +61,7 @@ from asyncio import run
 
 api_id = '26989318'
 api_hash = '062a6050a2c00efbd633b53c434a4f5b'
-session_name = 'my-laptop-script'
+session_name = 'App'
 phone_number = '+918220853158'
 
 
