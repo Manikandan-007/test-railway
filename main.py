@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-#re
+
 import re
 def Find(string):
     regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
@@ -9,6 +9,17 @@ def Find(string):
 
 class discudemy:
     completed = []
+
+    @staticmethod
+    def load():
+        with open('completed.txt','r') as f:
+            discudemy.completed = f.read().split(',')
+
+    @staticmethod
+    def save():
+        with open('completed.txt','w') as f:
+            f.write(','.join(discudemy.completed))
+
     @staticmethod
     def getLinks(url:str):
         return BeautifulSoup(requests.get(url).content,'html.parser').find_all('a')
@@ -36,13 +47,15 @@ class discudemy:
             return True
 
     @staticmethod
-    def make(message):
+    def make(message:str):
         try:
             discLink = Find(message)[0]
             print(discudemy.completed)
-            if discudemy.checkAvailable(discLink):
+            courseName = message.split('\n')[2]
+            if discudemy.checkAvailable(courseName):
                 link = discudemy.firstPagediskUdemy(discLink)
                 if link:
+                    link=courseName+'\n'+str(link)
                     discudemy.completed.append(discLink)
                     with open('completed.txt','w') as f:
                         f.write(','.join(discudemy.completed))
@@ -54,6 +67,15 @@ class discudemy:
                 return False
         except:
             return False
+
+    @staticmethod
+    def remove(text:str):
+        try:
+            discudemy.completed.remove(text.split('\n')[0])
+            return True
+        except:
+            return False
+
 
 from telethon.sync import TelegramClient, events
 
@@ -69,23 +91,30 @@ client =  TelegramClient(session_name,api_id,api_hash)
 
 @client.on(events.NewMessage())
 async def handler(event):
-    message = event.message
-    sender = await message.get_sender()
-    forwardId = 1002102875081
-    text = message.text
-    media = message.media
-    if sender.id==1494678304 or sender.id==2102875081:
-        if sender.id==1494678304:
-            await client.send_message('me',message=message)
-        text = discudemy.make(text)
-        if not text:
-            print(text)
-            return False
-        await client.send_message(forwardId, message=text)
-        print(f"Received text message: '{text}' and forwarded as it is.")
+    try:
+        message = event.message
+        sender = await message.get_sender()
+        forwardId = 1002102875081
+        text = message.text
+        if sender.id==1494678304 or sender.id==2102875081:
+            if sender.id==1494678304:
+                await client.send_message('me',message=message)
+            text = discudemy.make(text)
+            if not text:
+                print(text)
+                return False
+
+            await client.send_message(forwardId, message=text)
+            print(f"Received text message: '{text}' and forwarded as it is.")
+        if sender.id == 2094029563:
+            if discudemy.remove(text):
+                await client.send_message(sender.id,'Success')
+    except Exception as e:
+        print(e)
+
 
 async def list_channels():
-    await client.start()
+    client.start()
     dialogs = await client.get_dialogs()
     for dialog in dialogs:
         if dialog.is_channel:
@@ -93,7 +122,7 @@ async def list_channels():
 # await list_channels()
 
 async def main():
-    await client.start(phone=phone_number)
+    client.start(phone=phone_number)
     await client.run_until_disconnected()
 
 with client:
