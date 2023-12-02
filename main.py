@@ -39,8 +39,6 @@ class discudemy:
 
     @staticmethod
     def checkAvailable(message:str):
-        with open('completed.txt','r') as f:
-            discudemy.completed = f.read().split(',')
         if message in discudemy.completed:
             return False
         else:
@@ -51,19 +49,19 @@ class discudemy:
         try:
             discLink = Find(message)[0]
             print(discudemy.completed)
-            courseName = message.split('\n')[2]
+            courseName = message.split('\n')[3][4:]
+            print(message.split('\n'))
             if discudemy.checkAvailable(courseName):
                 link = discudemy.firstPagediskUdemy(discLink)
                 if link:
                     link=courseName+'\n'+str(link)
-                    discudemy.completed.append(discLink)
-                    with open('completed.txt','w') as f:
-                        f.write(','.join(discudemy.completed))
+                    discudemy.completed.append(courseName)
                     print('After Update',discudemy.completed)
                 else:
-                    print(discLink,'Expired!')
+                    print(courseName,discudemy,'Expired!')
                 return link
             else:
+                print('Available',courseName,discudemy.completed)
                 return False
         except:
             return False
@@ -71,9 +69,11 @@ class discudemy:
     @staticmethod
     def remove(text:str):
         try:
+            print(text.split('\n')[0])
             discudemy.completed.remove(text.split('\n')[0])
             return True
-        except:
+        except Exception as e:
+            print(e)
             return False
 
 
@@ -107,8 +107,12 @@ async def handler(event):
             await client.send_message(forwardId, message=text)
             print(f"Received text message: '{text}' and forwarded as it is.")
         if sender.id == 2094029563:
+            print(text)
             if discudemy.remove(text):
                 await client.send_message(sender.id,'Success')
+                print('Success')
+            else:
+                print('err')
     except Exception as e:
         print(e)
 
@@ -122,8 +126,13 @@ async def list_channels():
 # await list_channels()
 
 async def main():
+    print('\t Starting')
+    discudemy.load()
     await client.start(phone=phone_number)
     await client.run_until_disconnected()
 
 with client:
     client.loop.run_until_complete(main())
+
+discudemy.save()
+print('\tStopped')
