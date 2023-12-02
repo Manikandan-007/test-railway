@@ -114,7 +114,7 @@ async def handler(event):
 
 
 async def list_channels():
-    client.start()
+    await client.start()
     dialogs = await client.get_dialogs()
     for dialog in dialogs:
         if dialog.is_channel:
@@ -122,7 +122,7 @@ async def list_channels():
 # await list_channels()
 
 async def main():
-    client.start(phone=phone_number)
+    await client.start(phone=phone_number)
     await client.run_until_disconnected()
 
 with client:
