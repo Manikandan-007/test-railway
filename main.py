@@ -48,20 +48,20 @@ class discudemy:
     def make(message:str):
         try:
             discLink = Find(message)[0]
-            print(discudemy.completed)
+            # print(discudemy.completed)
             courseName = message.split('\n')[3][4:]
-            print(message.split('\n'))
+            # print(message.split('\n'))
             if discudemy.checkAvailable(courseName):
                 link = discudemy.firstPagediskUdemy(discLink)
                 if link:
                     link=courseName+'\n'+str(link)
                     discudemy.completed.append(courseName)
-                    print('After Update',discudemy.completed)
+                    # print('After Update',discudemy.completed)
                 else:
-                    print(courseName,discudemy,'Expired!')
+                    # print(courseName,discudemy,'Expired!')
                 return link
             else:
-                print('Available',courseName,discudemy.completed)
+                # print('Available',courseName,discudemy.completed)
                 return False
         except:
             return False
@@ -69,7 +69,7 @@ class discudemy:
     @staticmethod
     def remove(text:str):
         try:
-            print(text.split('\n')[0])
+            # print(text.split('\n')[0])
             discudemy.completed.remove(text.split('\n')[0])
             return True
         except Exception as e:
@@ -101,18 +101,19 @@ async def handler(event):
                 await client.send_message('me',message=message)
             text = discudemy.make(text)
             if not text:
-                print(text)
+                # print(text)
                 return False
 
             await client.send_message(forwardId, message=text)
-            print(f"Received text message: '{text}' and forwarded as it is.")
+            # print(f"Received text message: '{text}' and forwarded as it is.")
         if sender.id == 2094029563:
-            print(text)
+            # print(text)
             if discudemy.remove(text):
                 await client.send_message(sender.id,'Success')
-                print('Success')
+                # print('Success')
             else:
-                print('err')
+                # print('err')
+                pass
     except Exception as e:
         print(e)
 
@@ -122,7 +123,7 @@ async def list_channels():
     dialogs = await client.get_dialogs()
     for dialog in dialogs:
         if dialog.is_channel:
-            print(f"Channel Name: {dialog.title}, Sender ID: {dialog.id}")
+            # print(f"Channel Name: {dialog.title}, Sender ID: {dialog.id}")
 # await list_channels()
 
 async def main():
