@@ -59,6 +59,7 @@ class discudemy:
                     # print('After Update',discudemy.completed)
                 else:
                     # print(courseName,discudemy,'Expired!')
+                    pass
                 return link
             else:
                 # print('Available',courseName,discudemy.completed)
@@ -123,7 +124,7 @@ async def list_channels():
     dialogs = await client.get_dialogs()
     for dialog in dialogs:
         if dialog.is_channel:
-            # print(f"Channel Name: {dialog.title}, Sender ID: {dialog.id}")
+            print(f"Channel Name: {dialog.title}, Sender ID: {dialog.id}")
 # await list_channels()
 
 async def main():
